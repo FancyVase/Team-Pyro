@@ -27,8 +27,7 @@ int rightval = 0;
 const int leftpin = A0;
 int leftval = 0;
 
-// Define constants and variables for lengths and angles; inches for lengths and degrees for angles
-
+// Define lengths in inches
 double x = 5.0; // Starting xyz position
 double y = 0;
 double z = 10.0;
@@ -39,7 +38,7 @@ double length3 = 7.375; // length from elbow to wrist
 double length4 = 3.375; // length from wrist to tip of gripper
 double length5 = sqrt(pow(radius, 2) + pow((z - length1), 2)); // hypotenuse length
 
-// Define angles
+// Define angles in degrees
 double base_angle = degrees(atan2(x, y));
 double angle6 = degrees(acos((pow(length2, 2) + pow(length5, 2) - pow(length3, 2))/(2*length2*length5)));
 double angle7 = degrees(atan2((z - length1), radius));
@@ -67,7 +66,7 @@ int button3_pin = 10;
 int button4_pin = 9;
 int button5_pin = 8;
 
-//// Set up modes; Will initially be set to mode 4 (x-control)
+//// Set up modes; Will initially be set to mode 4 (z-control)
 boolean slide = true; // slide = switches between control of modes 1-5 and 6-9
 boolean mode1 = false; // mode1 = grip control
 boolean mode2 = false; // mode2 = twist control
@@ -127,57 +126,53 @@ void loop()
   Serial.print("Left EMG = ");
   Serial.println(leftval); 
   
+  // Button control boolean to reset all modes
+  bool buttonControl = false
+  if buttonControl {
+    mode1 = false; mode2 = false; mode3 = false; mode4 = false; mode5 = false; mode6 = false; mode7 = false; mode8 = false; mode 9 = false; buttonControl = false;
+  }
+  
   int slide_val = digitalRead(slide_pin);
   if (slide_val == 1) {
     int button1_val = digitalRead(button1_pin);
-    if (button1_val == 1) {
-      mode1 = true; mode2 = false; mode3 = false; mode4 = false; mode5 = false; mode6 = false; mode7 = false; mode8 = false; mode9 = false;
-    }
+    if (button1_val == 1) {buttonControl = true; mode1 = true;}
+    
     int button2_val = digitalRead(button2_pin);
-    if (button2_val == 1) {
-      mode1 = false; mode2 = true; mode3 = false; mode4 = false; mode5 = false; mode6 = false; mode7 = false; mode8 = false; mode9 = false;
-    }
+    if (button2_val == 1) {buttonControl = true; mode2 = true;}
+    
     int button3_val = digitalRead(button3_pin);
-    if (button3_val == 1) {
-      mode1 = false; mode2 = false; mode3 = true; mode4 = false; mode5 = false; mode6 = false; mode7 = false; mode8 = false; mode9 = false;
-    }
+    if (button3_val == 1) {buttonControl = true; mode3 = true;}
+    
     int button4_val = digitalRead(button4_pin);
-    if (button4_val == 1) {
-      mode1 = false; mode2 = false; mode3 = false; mode4 = true; mode5 = false; mode6 = false; mode7 = false; mode8 = false; mode9 = false;
-    }
+    if (button4_val == 1) {buttonControl = true; mode4 = true;}
+    
     int button5_val = digitalRead(button5_pin);
-    if (button5_val == 1) {
-      mode1 = false; mode2 = false; mode3 = false; mode4 = false; mode5 = true; mode6 = false; mode7 = false; mode8 = false; mode9 = false;
-    }
+    if (button5_val == 1) {buttonControl = true; mode5 = true;}
+    
   } else {
     int button1_val = digitalRead(button1_pin);
-    if (button1_val == 1) {
-      mode1 = false; mode2 = false; mode3 = false; mode4 = false; mode5 = false; mode6 = true; mode7 = false; mode8 = false; mode9 = false;
-    }
+    if (button1_val == 1) {buttonControl = true; mode6 = true;}
+    
     int button2_val = digitalRead(button2_pin);
-    if (button2_val == 1) {
-      mode1 = false; mode2 = false; mode3 = false; mode4 = false; mode5 = false; mode6 = false; mode7 = true; mode8 = false; mode9 = false;
-    }
+    if (button2_val == 1) {buttonControl = true; mode7 = true;}
+    
     int button3_val = digitalRead(button3_pin);
-    if (button3_val == 1) {
-      mode1 = false; mode2 = false; mode3 = false; mode4 = false; mode5 = false; mode6 = false; mode7 = false; mode8 = true; mode9 = false;
-    }
+    if (button3_val == 1) {buttonControl = true; mode8 = true;}
+    
     int button4_val = digitalRead(button4_pin);
-    if (button4_val == 1) {
-      mode1 = false; mode2 = false; mode3 = false; mode4 = false; mode5 = false; mode6 = false; mode7 = false; mode8 = false; mode9 = true;
-    }
+    if (button4_val == 1) {buttonControl = true; mode9 = true;}
   }
   
   // Mode 1: Right EMG increases the grip (angle), left EMG decreases the grip (angle)
   if (mode1) {
     if (right_tensed) {
-      grip_angle += 3; // grip angle increases by 5 degrees
+      grip_angle += 5; // grip angle increases by 5 degrees
       if (grip_angle > 180) {
         grip_angle = 180;
       }
     }
     else if (left_tensed) {
-      grip_angle -= 3; // grip angle decreases by 5 degrees
+      grip_angle -= 5; // grip angle decreases by 5 degrees
       if (grip_angle < 0) {
        grip_angle = 0; 
       }
@@ -187,13 +182,13 @@ void loop()
   // Mode 2: Right EMG increases the twist angle, left EMG decreases the twist angle
   if (mode2) {
     if (right_tensed) {
-      twist_angle += 3; // twist angle increases by 5 degrees
+      twist_angle += 5; // twist angle increases by 5 degrees
       if (twist_angle > 180) {
         twist_angle = 180;
       }
     }
     else if (left_tensed) {
-      twist_angle -= 3; // twist angle decreases by 5 degrees
+      twist_angle -= 5; // twist angle decreases by 5 degrees
       if (twist_angle < 0) {
         twist_angle = 0;
       }
@@ -203,13 +198,13 @@ void loop()
   // Mode 3: Right EMG increases the orientation angle, left EMG decreases the orientation angle
   if (mode3) {
     if (right_tensed) {
-      orientation_angle += 3; // orientation angle increases by 5 degrees
+      orientation_angle += 5; // orientation angle increases by 5 degrees
       if (orientation_angle > 180) {
         orientation_angle = 180;
       }
     }
     else if (left_tensed) {
-      orientation_angle -= 3; // orientation angle decreases by 5 degrees 
+      orientation_angle -= 5; // orientation angle decreases by 5 degrees 
       if (orientation_angle < 0) {
         orientation_angle = 0;
       }
@@ -219,13 +214,13 @@ void loop()
   // Mode 4: Right EMG increases x, left EMG decreases x
   if (mode4) {
     if (right_tensed) {
-      x += 0.07; // endpoint moves 0.1 inches per tick in the positive x direction
+      x += 0.1; // endpoint moves 0.1 inches per tick in the positive x direction
       if (x > 13.5) {
         x = 13.5;
       }
     }
     else if (left_tensed) {
-      x -= 0.07; // endpoint moves 0.1 inches per tick in the negative x direction
+      x -= 0.1; // endpoint moves 0.1 inches per tick in the negative x direction
       if (x < 0) {
         x = 0;
       }
@@ -235,13 +230,13 @@ void loop()
   // Mode 5: Right EMG increases y, left EMG decreases y
   if (mode5) {
     if (right_tensed) {
-      y += 0.07; // endpoint moves 0.1 inches per tick in the positive y direction
+      y += 0.1; // endpoint moves 0.1 inches per tick in the positive y direction
       if (y > 6.75) {
         y = 6.75;
       }  
     }
     else if (left_tensed) {
-      y -= 0.07; // endpoint moves 0.1 inches per tick in the negative y direction
+      y -= 0.1; // endpoint moves 0.1 inches per tick in the negative y direction
       if (y < -6.75) {
         y = -6.75;
       }
@@ -251,13 +246,13 @@ void loop()
   // Mode 6: Right EMG increases z, left EMG decreases z
   if (mode6) {
     if (right_tensed) {
-      z += 0.07; // endpoint moves 0.1 inches per tick in the positive z direction
+      z += 0.1; // endpoint moves 0.1 inches per tick in the positive z direction
       if (z > 10) {
         z = 10;
       }
     }
     else if (left_tensed) {
-      z -= 0.07; // endpoint moves 0.1 inches per tick in the negative z direction
+      z -= 0.1; // endpoint moves 0.1 inches per tick in the negative z direction
       if (z < 0) {
         z = 0;
       }
@@ -347,7 +342,7 @@ void loop()
   double angle10 = (90 - orientation_angle);
   double wrist_angle = (angle8 + angle9 + angle10); // This is angle 4 in diagram
   
-  // Define pulselengths for the servos || Uses arduino map function
+  // Define pulselengths for the servos from the found angles|| Uses arduino map function
   double pulselength_base = map(base_angle, 0, 180, SERVOMIN_BASE, SERVOMAX_BASE);
   double pulselength_shoulder = map(shoulder_angle, 0, 180, SERVOMIN_SHOULDER, SERVOMAX_SHOULDER);
   double pulselength_elbow = map(elbow_angle - 90, 0, 180, SERVOMIN_SHOULDER, SERVOMAX_SHOULDER);
@@ -362,6 +357,5 @@ void loop()
   pwm.setPWM(3, 0, pulselength_wrist);
   pwm.setPWM(4, 0, pulselength_twist);
   pwm.setPWM(5, 0, pulselength_grip);
-  
 }
 
